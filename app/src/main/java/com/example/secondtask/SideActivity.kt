@@ -1,26 +1,24 @@
 package com.example.secondtask
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
-import kotlinx.android.synthetic.main.activity_side.*
-import kotlin.math.pow
+import android.widget.TextView
+
 
 
 class SideActivity : AppCompatActivity() {
-
+    private var counter = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_side)
         Log.i(this::class.simpleName, "onCreate method initialized")
 
-        val intentCounter : Int = intent.getIntExtra("counter", 0)
-        second_text.text = "${ intentCounter.toDouble().pow(2.0).toInt()}"
+        val textView = findViewById<TextView>(R.id.second_text)
+
+        val intentCounter : Int = intent.extras?.getInt(MainActivity.COUNTER_ID) ?: counter
+        textView.text = (intentCounter * intentCounter).toString()
     }
 
 
@@ -54,20 +52,14 @@ class SideActivity : AppCompatActivity() {
         Log.i(this::class.simpleName, "onDestroy method initialized")
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        setResult(Activity.RESULT_OK, Intent())
-        finish()
-        Log.i(this::class.simpleName, "KeyDown method initialized")
-        return super.onKeyDown(keyCode, event)
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        counter = savedInstanceState.getInt(MainActivity.COUNTER_ID)
     }
 
-    companion object{
-        private const val COUNTER_NAME = "SideActivity"
-
-        fun createSideActivityIntent(context: Context, counter : Int): Intent{
-            val intent = Intent(context, SideActivity::class.java)
-            intent.putExtra(COUNTER_NAME, counter)
-            return intent
-        }
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt(MainActivity.COUNTER_ID, counter)
+        super.onSaveInstanceState(outState)
     }
+
 }
